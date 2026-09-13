@@ -1,10 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import { deleteEntry, getCorpusData, resetCorpusData, upsertEntry } from "@/server/corpus-core";
 import { seedData } from "@/lib/admin-store";
 
 const enabled = process.env.RUN_TURSO_INTEGRATION === "1";
 
 describe.skipIf(!enabled)("corpus-core integration", () => {
+  afterAll(async () => {
+    await resetCorpusData();
+  });
   it("seeds and reads the corpus", async () => {
     await resetCorpusData();
     const data = await getCorpusData();
