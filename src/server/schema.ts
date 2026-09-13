@@ -63,5 +63,9 @@ CREATE TABLE IF NOT EXISTS entry_tags (
 `;
 
 export async function migrate(db: { execute(sql: string): Promise<unknown> }) {
-  await db.execute(SCHEMA_SQL);
+  // The libsql HTTP API rejects multi-statement strings, so run them one at a time.
+  for (const stmt of SCHEMA_SQL.split(";")) {
+    const sql = stmt.trim();
+    if (sql) await db.execute(sql);
+  }
 }
