@@ -1,12 +1,8 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import {
-  AdminContext,
-  STORAGE_KEY,
-  seedData,
-  type AdminData,
-  type AdminStore,
-} from "@/lib/admin-store";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
+import { AdminContext, seedData, type AdminData, type AdminStore } from "@/lib/admin-store";
+import { getCorpus, resetCorpus } from "@/lib/corpus-api";
 import { Input } from "@/components/admin/ui";
 
 const title = "Scholia Admin — Corpus & citation management";
@@ -38,36 +34,25 @@ const nav = [
 ] as const;
 
 function AdminLayout() {
-  const [data, setData] = useState<AdminData>(() => seedData());
-  const [hydrated, setHydrated] = useState(false);
+  const { data } = useQuery({ queryKey: ["corpus"], queryFn: getCorpus });
+  const queryClient = useQueryClient();
   const [q, setQ] = useState("");
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setData(JSON.parse(raw) as AdminData);
-    } catch {
-      /* ignore corrupt local copy */
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [data, hydrated]);
+  const mutate = useCallback(
+    async (run: () => Promise<AdminData>) => {
+      const next = await run();
+      queryClient.setQueryData<AdminData>(["corpus"], next);
+    },
+    [queryClient],
+  );
 
   const store: AdminStore = useMemo(
     () => ({
-      data,
-      update: (fn) => setData((d) => fn(d)),
-      reset: () => setData(seedData()),
+      data: data ?? seedData(),
+      mutate,
+      reset: () => mutate(resetCorpus),
     }),
-    [data],
+    [data, mutate],
   );
 
   const results = useMemo(() => {
