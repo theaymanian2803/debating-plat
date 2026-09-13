@@ -753,12 +753,28 @@ export async function getCorpusData(): Promise<AdminData> {
   return readAll();
 }
 
-const replace = async (table: string, row: Record<string, unknown>): Promise<void> => {
+// Preserves sort_order on update; appends at the end on insert.
+const upsertWithOrder = async (
+  table: string,
+  pk: string,
+  idValue: string,
+  row: Record<string, unknown>,
+): Promise<void> => {
   const db = await getDb();
-  const cols = Object.keys(row);
+  const existing = await db.execute({
+    sql: `SELECT sort_order FROM ${table} WHERE ${pk} = ?`,
+    args: [idValue],
+  });
+  const maxRes = await db.execute(`SELECT COALESCE(MAX(sort_order), -1) + 1 AS next FROM ${table}`);
+  const sortOrder =
+    existing.rows.length > 0
+      ? Number(existing.rows[0]!.sort_order)
+      : Number(maxRes.rows[0]?.next ?? 0);
+  const { sort_order: _dropped, ...rest } = row;
+  const cols = Object.keys(rest);
   await db.execute({
-    sql: `INSERT OR REPLACE INTO ${table} (${cols.join(", ")}) VALUES (${cols.map(() => "?").join(", ")})`,
-    args: cols.map((c) => row[c]),
+    sql: `INSERT OR REPLACE INTO ${table} (${cols.join(", ")}, sort_order) VALUES (${cols.map(() => "?").join(", ")}, ?)`,
+    args: [...cols.map((c) => rest[c]), sortOrder],
   });
 };
 
@@ -838,10 +854,10 @@ export const deleteEntry = async (id: string): Promise<AdminData> => {
 };
 
 export const upsertCommentary = async (c: AdminCommentary): Promise<AdminData> => {
-  await replace("commentaries", {
+  await upsertWithOrder("commentaries", "id", c.id, {
     id: c.id, entry_id: c.entryId, scholar: c.scholar, text: c.text, book: c.book,
     volume_page: c.volumePage, source_ref: c.sourceRef, status: c.status,
-    seeded: c.seeded ? 1 : 0, sort_order: 0,
+    seeded: c.seeded ? 1 : 0,
   });
   return readAll();
 };
@@ -852,11 +868,11 @@ export const deleteCommentary = async (id: string): Promise<AdminData> => {
 };
 
 export const upsertRebuttal = async (r: AdminRebuttal): Promise<AdminData> => {
-  await replace("rebuttals", {
+  await upsertWithOrder("rebuttals", "id", r.id, {
     id: r.id, entry_id: r.entryId, opponent: r.opponent, stance: r.stance, text: r.text,
     counter_refs: r.counterRefs, status: r.status,
     counter: r.counter ? JSON.stringify(r.counter) : null,
-    citations: JSON.stringify(r.citations), sort_order: 0,
+    citations: JSON.stringify(r.citations),
   });
   return readAll();
 };
@@ -867,9 +883,9 @@ export const deleteRebuttal = async (id: string): Promise<AdminData> => {
 };
 
 export const upsertSource = async (s: AdminSource): Promise<AdminData> => {
-  await replace("sources", {
+  await upsertWithOrder("sources", "id", s.id, {
     id: s.id, label: s.label, detail: s.detail, kind: s.kind, status: s.status,
-    archive: s.archive, sort_order: 0,
+    archive: s.archive,
   });
   return readAll();
 };
@@ -880,8 +896,8 @@ export const deleteSource = async (id: string): Promise<AdminData> => {
 };
 
 export const upsertCategory = async (c: AdminCategory): Promise<AdminData> => {
-  await replace("categories", {
-    id: c.id, label: c.label, subs: JSON.stringify(c.subs), sort_order: 0,
+  await upsertWithOrder("categories", "id", c.id, {
+    id: c.id, label: c.label, subs: JSON.stringify(c.subs),
   });
   return readAll();
 };
