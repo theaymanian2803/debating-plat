@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { uid, useAdmin, type AdminEntry } from "@/lib/admin-store";
+import { deleteEntry, upsertEntry, upsertTag } from "@/lib/corpus-api";
 import {
   Button,
   EmptyRow,
@@ -42,10 +43,12 @@ const blank = (): AdminEntry => ({
   subCategory: "",
   reference: "",
   tags: [],
+  sections: [],
+  map: { nodes: [], edges: [] },
 });
 
 function EntriesPage() {
-  const { data, update } = useAdmin();
+  const { data, mutate } = useAdmin();
   const [draft, setDraft] = useState<AdminEntry>(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -56,13 +59,7 @@ function EntriesPage() {
 
   const save = () => {
     if (!draft.title.trim()) return;
-    update((d) => ({
-      ...d,
-      entries: editingId
-        ? d.entries.map((e) => (e.id === editingId ? draft : e))
-        : [...d.entries, draft],
-      tags: Array.from(new Set([...d.tags, ...draft.tags])),
-    }));
+    mutate(() => upsertEntry(draft));
     setDraft(blank());
     setEditingId(null);
   };
@@ -132,10 +129,7 @@ function EntriesPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Category">
-              <Select
-                value={draft.category}
-                onChange={(e) => set("category", e.target.value)}
-              >
+              <Select value={draft.category} onChange={(e) => set("category", e.target.value)}>
                 {data.categories.map((c) => (
                   <option key={c.id} value={c.label}>
                     {c.label}
@@ -163,9 +157,7 @@ function EntriesPage() {
               options={data.tags}
               value={draft.tags}
               onChange={(tags) => set("tags", tags)}
-              onCreate={(tag) =>
-                update((d) => ({ ...d, tags: Array.from(new Set([...d.tags, tag])) }))
-              }
+              onCreate={(tag) => mutate(() => upsertTag({ id: tag, label: tag }))}
             />
           </Field>
 
@@ -196,12 +188,7 @@ function EntriesPage() {
                   >
                     Edit
                   </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() =>
-                      update((d) => ({ ...d, entries: d.entries.filter((x) => x.id !== e.id) }))
-                    }
-                  >
+                  <Button variant="danger" onClick={() => mutate(() => deleteEntry(e.id))}>
                     Delete
                   </Button>
                 </div>
