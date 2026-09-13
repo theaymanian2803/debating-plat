@@ -1,17 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { uid, useAdmin, type AdminCommentary } from "@/lib/admin-store";
+import { deleteCommentary, upsertCommentary } from "@/lib/corpus-api";
 import type { Verification } from "@/lib/corpus";
 import { StatusBadge } from "@/components/StatusBadge";
-import {
-  Button,
-  EmptyRow,
-  Field,
-  Input,
-  Panel,
-  Select,
-  Textarea,
-} from "@/components/admin/ui";
+import { Button, EmptyRow, Field, Input, Panel, Select, Textarea } from "@/components/admin/ui";
 
 export const Route = createFileRoute("/admin/commentaries")({
   head: () => ({
@@ -34,7 +27,7 @@ export const Route = createFileRoute("/admin/commentaries")({
 });
 
 function CommentaryPage() {
-  const { data, update } = useAdmin();
+  const { data, mutate } = useAdmin();
   const [entryId, setEntryId] = useState(data.entries[0]?.id ?? "");
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -47,6 +40,7 @@ function CommentaryPage() {
     volumePage: "",
     sourceRef: "",
     status: "unverified",
+    seeded: false,
   });
 
   const [draft, setDraft] = useState<AdminCommentary>(blank);
@@ -58,13 +52,7 @@ function CommentaryPage() {
 
   const save = () => {
     if (!draft.scholar.trim()) return;
-    const next = { ...draft, entryId };
-    update((d) => ({
-      ...d,
-      commentaries: editingId
-        ? d.commentaries.map((c) => (c.id === editingId ? next : c))
-        : [...d.commentaries, next],
-    }));
+    mutate(() => upsertCommentary({ ...draft, entryId }));
     setDraft(blank());
     setEditingId(null);
   };
@@ -179,15 +167,7 @@ function CommentaryPage() {
                     >
                       Edit
                     </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() =>
-                        update((d) => ({
-                          ...d,
-                          commentaries: d.commentaries.filter((x) => x.id !== c.id),
-                        }))
-                      }
-                    >
+                    <Button variant="danger" onClick={() => mutate(() => deleteCommentary(c.id))}>
                       Delete
                     </Button>
                   </div>
