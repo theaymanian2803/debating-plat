@@ -367,7 +367,8 @@ export const entries: Entry[] = [
       {
         id: "e2",
         perspective: "Natural law",
-        claim: "Goodness is grounded in nature, which the divine will recognizes rather than creates.",
+        claim:
+          "Goodness is grounded in nature, which the divine will recognizes rather than creates.",
         status: "unverified",
         counter: {
           author: "R. M. Adams",
@@ -387,7 +388,8 @@ export const entries: Entry[] = [
       {
         id: "e3",
         perspective: "Kantian",
-        claim: "Moral obligation rests on the categorical imperative, autonomous from any external authority.",
+        claim:
+          "Moral obligation rests on the categorical imperative, autonomous from any external authority.",
         status: "disputed",
         citations: [
           {

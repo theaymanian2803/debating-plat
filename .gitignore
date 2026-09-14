@@ -16,9 +16,11 @@ dist-ssr
 .nitro
 *.local
 
-# Wrangler / Cloudflare
-.wrangler/
+# Local secrets
 .dev.vars
+
+# Vercel
+.vercel/
 
 # Editor directories and files
 .vscode/*
@@ -30,3 +32,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# SDD workspace
+.superpowers/

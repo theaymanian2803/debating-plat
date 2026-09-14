@@ -1,6 +1,8 @@
-import { collections, entries, type Entry } from "@/lib/corpus";
+import type { Entry } from "@/lib/corpus";
 
 export function CorpusSidebar({
+  entries,
+  collections,
   selectedId,
   onSelect,
   query,
@@ -8,6 +10,8 @@ export function CorpusSidebar({
   activeCollection,
   onCollectionChange,
 }: {
+  entries: Entry[];
+  collections: { id: string; label: string }[];
   selectedId: string;
   onSelect: (id: string) => void;
   query: string;

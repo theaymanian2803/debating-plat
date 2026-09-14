@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { citationCount, entries } from "@/lib/corpus";
+import { useEffect, useState } from "react";
+import { citationCount } from "@/lib/corpus";
+import { useCorpus } from "@/lib/use-corpus";
 import { CorpusSidebar } from "@/components/CorpusSidebar";
 import { PrimaryPane } from "@/components/PrimaryPane";
 import { RebuttalPane } from "@/components/RebuttalPane";
@@ -26,14 +27,31 @@ export const Route = createFileRoute("/")({
 });
 
 function ReadingRoom() {
-  const [selectedId, setSelectedId] = useState(entries[0]!.id);
+  const { entries, collections } = useCorpus();
+  const [selectedId, setSelectedId] = useState(entries[0]?.id ?? "");
   const [query, setQuery] = useState("");
   const [collection, setCollection] = useState<string | null>(null);
   const [perspective, setPerspective] = useState<string | null>(null);
   const [focusedNode, setFocusedNode] = useState<string | null>(null);
   const [ledgerOpen, setLedgerOpen] = useState(false);
 
-  const entry = entries.find((e) => e.id === selectedId) ?? entries[0]!;
+  useEffect(() => {
+    if (selectedId && !entries.some((e) => e.id === selectedId)) {
+      setSelectedId(entries[0]?.id ?? "");
+    }
+  }, [entries, selectedId]);
+
+  const entry = entries.find((e) => e.id === selectedId) ?? entries[0] ?? null;
+
+  if (!entry) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[oklch(0.965_0.008_255)] to-[oklch(0.905_0.02_258)] font-sans text-ink">
+        <p className="rounded-2xl bg-white/50 px-6 py-8 text-center font-serif text-[15px] text-steel ring-1 ring-white/70 backdrop-blur-xl">
+          The corpus is empty. Add entries in the admin area to populate the reading room.
+        </p>
+      </div>
+    );
+  }
 
   const select = (id: string) => {
     setSelectedId(id);
@@ -49,6 +67,8 @@ function ReadingRoom() {
 
       <div className="relative flex h-screen w-full overflow-hidden">
         <CorpusSidebar
+          entries={entries}
+          collections={collections}
           selectedId={entry.id}
           onSelect={select}
           query={query}

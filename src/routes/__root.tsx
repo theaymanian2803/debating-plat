@@ -7,10 +7,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
+import { siteNavItems } from "@/lib/nav";
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -37,9 +37,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -77,14 +74,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Insight Arena" },
+      {
+        name: "description",
+        content:
+          "A debate platform for exploring religious texts and philosophy with scholarly commentary and rebuttals.",
+      },
+      { property: "og:title", content: "Insight Arena" },
+      {
+        property: "og:description",
+        content:
+          "A debate platform for exploring religious texts and philosophy with scholarly commentary and rebuttals.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -114,12 +117,33 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function SiteNav() {
+  return (
+    <nav className="sticky top-0 z-40 flex flex-wrap items-center gap-1 border-b border-white/60 bg-white/35 px-6 py-2 backdrop-blur-xl">
+      <span className="mr-4 font-serif text-[15px] leading-none font-medium text-ink">Scholia</span>
+      {siteNavItems.map((item) => (
+        <Link
+          key={item.to}
+          to={item.to}
+          activeOptions={{ exact: item.to === "/" }}
+          activeProps={{ className: "bg-ink text-paper ring-ink/15" }}
+          inactiveProps={{ className: "text-steel ring-transparent hover:bg-white/60" }}
+          className="rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ring-1 transition"
+        >
+          {item.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <SiteNav />
       <Outlet />
     </QueryClientProvider>
   );

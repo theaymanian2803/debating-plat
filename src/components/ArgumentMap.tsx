@@ -24,7 +24,11 @@ export function ArgumentMap({
 
       <div className="px-5 py-5">
         <div className="relative h-64">
-          <svg className="absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <svg
+            className="absolute inset-0 size-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
             {edges.map(([a, b]) => {
               const na = at(a);
               const nb = at(b);

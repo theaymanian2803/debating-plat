@@ -1,16 +1,6 @@
 # Insight Arena
 
-Design a debate platform with a main dashboard featuring a sidebar for navigating between different categories such as religious texts and philosophy. When a user selects a specific verse or premise, the screen should split into a detailed view. On one side, display the primary text and allow users to expand sections to view scholarly commentary and references. On the other side, provide a comparison area showing rebuttals from various perspectives, structured to show counter-arguments clearly. Include an interactive visualization tool for mapping debates and a consistent system for verifying all academic citations and sources.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b7e3e8f1-0247-4e9a-8490-2a0269b2be6f).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+A debate platform for exploring religious texts and philosophy. Browse the corpus in the sidebar, open a verse or premise to see the primary text alongside scholarly commentary, and compare rebuttals from different perspectives. Includes an interactive argument map for visualizing debates and a citation ledger for verifying sources.
 
 ## Development
 
@@ -22,3 +12,15 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Deployment
+
+Deploys to Vercel. Pushing to `main` triggers a production deployment.
+
+1. Import the repository at [vercel.com/new](https://vercel.com/new). Vercel
+   detects TanStack Start and Nitro automatically, so no build settings are
+   required.
+2. Add the environment variables `TURSO_URL` and `TURSO_AUTH_TOKEN`
+   (Project Settings → Environment Variables).
+3. Deploy. Every push to `main` ships a new version.
+

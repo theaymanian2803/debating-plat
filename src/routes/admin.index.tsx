@@ -60,10 +60,7 @@ function Overview() {
               .reverse()
               .slice(0, 5)
               .map((e) => (
-                <li
-                  key={e.id}
-                  className="rounded-lg bg-white/55 px-3 py-2.5 ring-1 ring-white/75"
-                >
+                <li key={e.id} className="rounded-lg bg-white/55 px-3 py-2.5 ring-1 ring-white/75">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="truncate font-serif text-[14px] text-ink">{e.title}</span>
                     <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-mist">
