@@ -32,6 +32,8 @@ export function adminDataToRows(data: AdminData): DbSnapshot {
     reference: e.reference,
     sections: JSON.stringify(e.sections),
     map: JSON.stringify(e.map),
+    translations: JSON.stringify(e.translations),
+    related: JSON.stringify(e.related),
     sort_order: i,
   }));
 
@@ -58,6 +60,9 @@ export function adminDataToRows(data: AdminData): DbSnapshot {
     status: r.status,
     counter: r.counter ? JSON.stringify(r.counter) : null,
     citations: JSON.stringify(r.citations),
+    warrant: r.warrant,
+    backing: r.backing,
+    qualifier: r.qualifier,
     sort_order: i,
   }));
 
@@ -92,69 +97,74 @@ export function adminDataToRows(data: AdminData): DbSnapshot {
 export function rowsToAdminData(snap: DbSnapshot): AdminData {
   const tagsByEntry = new Map<string, string[]>();
   for (const link of snap.entryTags) {
-    const entryId = String(link.entry_id);
+    const entryId = String(link["entry_id"]);
     const list = tagsByEntry.get(entryId) ?? [];
-    list.push(String(link.tag_id));
+    list.push(String(link["tag_id"]));
     tagsByEntry.set(entryId, list);
   }
 
   const entries: AdminEntry[] = snap.entries.map((r) => ({
-    id: String(r.id),
-    kind: r.kind as AdminEntry["kind"],
-    title: String(r.title),
-    originalText: String(r.original_text),
-    translation: String(r.translation),
-    category: String(r.category),
-    subCategory: String(r.sub_category),
-    reference: String(r.reference),
-    tags: tagsByEntry.get(String(r.id)) ?? [],
-    sections: JSON.parse(String(r.sections)),
-    map: JSON.parse(String(r.map)),
+    id: String(r["id"]),
+    kind: r["kind"] as AdminEntry["kind"],
+    title: String(r["title"]),
+    originalText: String(r["original_text"]),
+    translation: String(r["translation"]),
+    category: String(r["category"]),
+    subCategory: String(r["sub_category"]),
+    reference: String(r["reference"]),
+    tags: tagsByEntry.get(String(r["id"])) ?? [],
+    sections: JSON.parse(String(r["sections"])),
+    map: JSON.parse(String(r["map"])),
+    translations: JSON.parse(String(r["translations"] ?? "[]")),
+    related: JSON.parse(String(r["related"] ?? "[]")),
   }));
 
   const commentaries: AdminCommentary[] = snap.commentaries.map((r) => ({
-    id: String(r.id),
-    entryId: String(r.entry_id),
-    scholar: String(r.scholar),
-    text: String(r.text),
-    book: String(r.book),
-    volumePage: String(r.volume_page),
-    sourceRef: String(r.source_ref),
-    status: r.status as AdminCommentary["status"],
-    seeded: Boolean(r.seeded),
+    id: String(r["id"]),
+    entryId: String(r["entry_id"]),
+    scholar: String(r["scholar"]),
+    text: String(r["text"]),
+    book: String(r["book"]),
+    volumePage: String(r["volume_page"]),
+    sourceRef: String(r["source_ref"]),
+    status: r["status"] as AdminCommentary["status"],
+    seeded: Boolean(r["seeded"]),
   }));
 
   const rebuttals: AdminRebuttal[] = snap.rebuttals.map((r) => ({
-    id: String(r.id),
-    entryId: String(r.entry_id),
-    opponent: String(r.opponent),
-    stance: String(r.stance),
-    text: String(r.text),
-    counterRefs: String(r.counter_refs),
-    status: r.status as AdminRebuttal["status"],
+    id: String(r["id"]),
+    entryId: String(r["entry_id"]),
+    opponent: String(r["opponent"]),
+    stance: String(r["stance"]),
+    text: String(r["text"]),
+    counterRefs: String(r["counter_refs"]),
+    status: r["status"] as AdminRebuttal["status"],
     counter:
-      r.counter == null
+      r["counter"] == null
         ? undefined
-        : (JSON.parse(String(r.counter)) as NonNullable<AdminRebuttal["counter"]>),
-    citations: JSON.parse(String(r.citations)),
+        : (JSON.parse(String(r["counter"])) as NonNullable<AdminRebuttal["counter"]>),
+    citations: JSON.parse(String(r["citations"])),
+    warrant: String(r["warrant"] ?? ""),
+    backing: String(r["backing"] ?? ""),
+    qualifier: String(r["qualifier"] ?? ""),
   }));
 
   const sources: AdminSource[] = snap.sources.map((r) => ({
-    id: String(r.id),
-    label: String(r.label),
-    detail: String(r.detail),
-    kind: r.kind as AdminSource["kind"],
-    status: r.status as AdminSource["status"],
-    archive: String(r.archive),
+    id: String(r["id"]),
+    label: String(r["label"]),
+    detail: String(r["detail"]),
+    kind: r["kind"] as AdminSource["kind"],
+    status: r["status"] as AdminSource["status"],
+    archive: String(r["archive"]),
   }));
 
   const categories: AdminCategory[] = snap.categories.map((r) => ({
-    id: String(r.id),
-    label: String(r.label),
-    subs: JSON.parse(String(r.subs)),
+    id: String(r["id"]),
+    label: String(r["label"]),
+    subs: JSON.parse(String(r["subs"])),
   }));
 
-  const tags = snap.tags.map((r) => String(r.label));
+  const tags = snap.tags.map((r) => String(r["label"]));
 
   return { entries, commentaries, rebuttals, sources, categories, tags };
 }

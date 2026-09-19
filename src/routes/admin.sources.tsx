@@ -75,12 +75,12 @@ function SourcesPage() {
 
   const toggle = (id: string) => {
     const s = data.sources.find((x) => x.id === id);
-    if (s) mutate(() => upsertSource({ ...s, status: statusNext[s.status] }));
+    if (s) mutate(() => upsertSource({ data: { ...s, status: statusNext[s.status] } }));
   };
 
   const save = () => {
     if (!draft.label.trim()) return;
-    mutate(() => upsertSource(draft));
+    mutate(() => upsertSource({ data: draft }));
     setDraft(blank());
     setEditingId(null);
   };
@@ -207,7 +207,10 @@ function SourcesPage() {
                   >
                     Edit
                   </Button>
-                  <Button variant="danger" onClick={() => mutate(() => deleteSource(s.id))}>
+                  <Button
+                    variant="danger"
+                    onClick={() => mutate(() => deleteSource({ data: s.id }))}
+                  >
                     Delete
                   </Button>
                 </div>

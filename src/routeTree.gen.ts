@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminCommentariesRouteImport } from './routes/admin.commentaries'
 import { Route as AdminEntriesRouteImport } from './routes/admin.entries'
+import { Route as AdminPathsRouteImport } from './routes/admin.paths'
 import { Route as AdminRebuttalsRouteImport } from './routes/admin.rebuttals'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
 import { Route as AdminSourcesRouteImport } from './routes/admin.sources'
 import { Route as AdminTaxonomyRouteImport } from './routes/admin.taxonomy'
 
@@ -33,6 +36,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCommentariesRoute = AdminCommentariesRouteImport.update({
   id: '/commentaries',
   path: '/commentaries',
@@ -43,9 +51,19 @@ const AdminEntriesRoute = AdminEntriesRouteImport.update({
   path: '/entries',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPathsRoute = AdminPathsRouteImport.update({
+  id: '/paths',
+  path: '/paths',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRebuttalsRoute = AdminRebuttalsRouteImport.update({
   id: '/rebuttals',
   path: '/rebuttals',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSourcesRoute = AdminSourcesRouteImport.update({
@@ -62,18 +80,24 @@ const AdminTaxonomyRoute = AdminTaxonomyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/commentaries': typeof AdminCommentariesRoute
   '/admin/entries': typeof AdminEntriesRoute
+  '/admin/paths': typeof AdminPathsRoute
   '/admin/rebuttals': typeof AdminRebuttalsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/taxonomy': typeof AdminTaxonomyRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/commentaries': typeof AdminCommentariesRoute
   '/admin/entries': typeof AdminEntriesRoute
+  '/admin/paths': typeof AdminPathsRoute
   '/admin/rebuttals': typeof AdminRebuttalsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/taxonomy': typeof AdminTaxonomyRoute
   '/admin': typeof AdminIndexRoute
@@ -82,9 +106,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/commentaries': typeof AdminCommentariesRoute
   '/admin/entries': typeof AdminEntriesRoute
+  '/admin/paths': typeof AdminPathsRoute
   '/admin/rebuttals': typeof AdminRebuttalsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/taxonomy': typeof AdminTaxonomyRoute
   '/admin/': typeof AdminIndexRoute
@@ -94,18 +121,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/admin/activity'
     | '/admin/commentaries'
     | '/admin/entries'
+    | '/admin/paths'
     | '/admin/rebuttals'
+    | '/admin/requests'
     | '/admin/sources'
     | '/admin/taxonomy'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin/activity'
     | '/admin/commentaries'
     | '/admin/entries'
+    | '/admin/paths'
     | '/admin/rebuttals'
+    | '/admin/requests'
     | '/admin/sources'
     | '/admin/taxonomy'
     | '/admin'
@@ -113,9 +146,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/admin/activity'
     | '/admin/commentaries'
     | '/admin/entries'
+    | '/admin/paths'
     | '/admin/rebuttals'
+    | '/admin/requests'
     | '/admin/sources'
     | '/admin/taxonomy'
     | '/admin/'
@@ -149,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/commentaries': {
       id: '/admin/commentaries'
       path: '/commentaries'
@@ -163,11 +206,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEntriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/paths': {
+      id: '/admin/paths'
+      path: '/paths'
+      fullPath: '/admin/paths'
+      preLoaderRoute: typeof AdminPathsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/rebuttals': {
       id: '/admin/rebuttals'
       path: '/rebuttals'
       fullPath: '/admin/rebuttals'
       preLoaderRoute: typeof AdminRebuttalsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sources': {
@@ -188,18 +245,24 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminActivityRoute: typeof AdminActivityRoute
   AdminCommentariesRoute: typeof AdminCommentariesRoute
   AdminEntriesRoute: typeof AdminEntriesRoute
+  AdminPathsRoute: typeof AdminPathsRoute
   AdminRebuttalsRoute: typeof AdminRebuttalsRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
   AdminSourcesRoute: typeof AdminSourcesRoute
   AdminTaxonomyRoute: typeof AdminTaxonomyRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivityRoute: AdminActivityRoute,
   AdminCommentariesRoute: AdminCommentariesRoute,
   AdminEntriesRoute: AdminEntriesRoute,
+  AdminPathsRoute: AdminPathsRoute,
   AdminRebuttalsRoute: AdminRebuttalsRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
   AdminSourcesRoute: AdminSourcesRoute,
   AdminTaxonomyRoute: AdminTaxonomyRoute,
   AdminIndexRoute: AdminIndexRoute,

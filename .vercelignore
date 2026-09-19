@@ -1,0 +1,8 @@
+node_modules
+.output
+.vercel
+.tanstack
+.superpowers
+docs
+.dev.vars
+*.log

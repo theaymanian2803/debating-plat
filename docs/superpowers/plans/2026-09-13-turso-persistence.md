@@ -46,7 +46,7 @@ Create `C:\Users\sbere\OneDrive\Desktop\deb\.dev.vars` with exactly:
 
 ```
 TURSO_URL=libsql://debate-unccode.aws-eu-west-1.turso.io
-TURSO_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODkzMTMyMjksImlkIjoiMDFhMDliNjAtOTMwMS03NjA0LTkzYTYtZDU4ODE3ZDc0OTI4Iiwia2lkIjoibVUzMHRXWi10VEdTZFBSbnI4YnZtY1RVX0RBeGVYZGZvVE5nZ0lONEdvRSIsInJpZCI6IjBkY2RlYzFkLTMwOTQtNDRlNC05NzJiLTI2ZTZkODczNThlZSJ9.SU5xrjoEmhFbyHO7E1QtbGB9IVxEgqnCVhsvbIyVuNzVVd77Xy0lCkz-8dgS-ADwx0KFbwnC7Fxek7DVD0KHAQ
+TURSO_AUTH_TOKEN=<redacted — set in .dev.vars / Vercel env, never committed>
 ```
 
 - [ ] **Step 3: Verify it is ignored**

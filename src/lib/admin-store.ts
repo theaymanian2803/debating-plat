@@ -20,6 +20,8 @@ export type AdminEntry = {
   tags: string[];
   sections: CommentarySection[];
   map: Entry["map"];
+  translations: { label: string; text: string }[];
+  related: string[];
 };
 
 export type AdminCommentary = {
@@ -44,6 +46,9 @@ export type AdminRebuttal = {
   status: Verification;
   counter?: Rebuttal["counter"];
   citations: Citation[];
+  warrant: string;
+  backing: string;
+  qualifier: string;
 };
 
 export type SourceStatus = "verified" | "pending" | "unverified";
@@ -97,6 +102,8 @@ export function seedData(): AdminData {
       tags: e.map.nodes.slice(0, 3).map((n) => n.label),
       sections: e.sections,
       map: e.map,
+      translations: e.translations,
+      related: e.related,
     };
   });
 
@@ -127,6 +134,9 @@ export function seedData(): AdminData {
       status: r.status,
       ...(r.counter ? { counter: r.counter } : {}),
       citations: r.citations,
+      warrant: r.warrant ?? "",
+      backing: r.backing ?? "",
+      qualifier: r.qualifier ?? "",
     })),
   );
 
@@ -184,6 +194,8 @@ export function normalizeAdminData(data: AdminData): AdminData {
       e.map && Array.isArray(e.map.nodes) && Array.isArray(e.map.edges)
         ? e.map
         : { nodes: [], edges: [] },
+    translations: Array.isArray(e.translations) ? e.translations : [],
+    related: Array.isArray(e.related) ? e.related : [],
   }));
   const commentaries = data.commentaries.map((c) => ({
     ...c,
@@ -193,6 +205,9 @@ export function normalizeAdminData(data: AdminData): AdminData {
     ...r,
     citations: Array.isArray(r.citations) ? r.citations : [],
     counter: r.counter,
+    warrant: typeof r.warrant === "string" ? r.warrant : "",
+    backing: typeof r.backing === "string" ? r.backing : "",
+    qualifier: typeof r.qualifier === "string" ? r.qualifier : "",
   }));
   return {
     entries,

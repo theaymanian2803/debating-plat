@@ -52,7 +52,7 @@ function CommentaryPage() {
 
   const save = () => {
     if (!draft.scholar.trim()) return;
-    mutate(() => upsertCommentary({ ...draft, entryId }));
+    mutate(() => upsertCommentary({ data: { ...draft, entryId } }));
     setDraft(blank());
     setEditingId(null);
   };
@@ -167,7 +167,10 @@ function CommentaryPage() {
                     >
                       Edit
                     </Button>
-                    <Button variant="danger" onClick={() => mutate(() => deleteCommentary(c.id))}>
+                    <Button
+                      variant="danger"
+                      onClick={() => mutate(() => deleteCommentary({ data: c.id }))}
+                    >
                       Delete
                     </Button>
                   </div>

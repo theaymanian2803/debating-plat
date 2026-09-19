@@ -25,15 +25,15 @@ describe("normalizeAdminData", () => {
   function legacyData(): AdminData {
     const data = seedData();
     for (const e of data.entries) {
-      (e as Partial<typeof e>).sections = undefined;
-      (e as Partial<typeof e>).map = undefined;
+      delete (e as { sections?: unknown }).sections;
+      delete (e as { map?: unknown }).map;
     }
     for (const r of data.rebuttals) {
-      (r as Partial<typeof r>).citations = undefined;
-      (r as Partial<typeof r>).counter = undefined;
+      delete (r as { citations?: unknown }).citations;
+      delete (r as { counter?: unknown }).counter;
     }
     for (const c of data.commentaries) {
-      (c as Partial<typeof c>).seeded = undefined;
+      delete (c as { seeded?: unknown }).seeded;
     }
     return data;
   }

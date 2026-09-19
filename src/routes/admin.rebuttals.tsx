@@ -41,6 +41,9 @@ function RebuttalsPage() {
     counterRefs: "",
     status: "unverified",
     citations: [],
+    warrant: "",
+    backing: "",
+    qualifier: "",
   });
 
   const [draft, setDraft] = useState<AdminRebuttal>(blank);
@@ -53,7 +56,7 @@ function RebuttalsPage() {
 
   const save = () => {
     if (!draft.opponent.trim() || !draft.text.trim()) return;
-    mutate(() => upsertRebuttal({ ...draft, entryId }));
+    mutate(() => upsertRebuttal({ data: { ...draft, entryId } }));
     setDraft(blank());
     setEditingId(null);
   };
@@ -141,7 +144,10 @@ function RebuttalsPage() {
                     >
                       Edit
                     </Button>
-                    <Button variant="danger" onClick={() => mutate(() => deleteRebuttal(r.id))}>
+                    <Button
+                      variant="danger"
+                      onClick={() => mutate(() => deleteRebuttal({ data: r.id }))}
+                    >
                       Delete
                     </Button>
                   </div>
@@ -194,6 +200,33 @@ function RebuttalsPage() {
 
           <Field label="Rebuttal text">
             <Textarea rows={5} value={draft.text} onChange={(e) => set("text", e.target.value)} />
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Warrant" hint="The general rule the claim rests on.">
+              <Textarea
+                rows={2}
+                value={draft.warrant}
+                onChange={(e) => set("warrant", e.target.value)}
+                placeholder="e.g. Whatever is not subject to our command is indifferent to the will."
+              />
+            </Field>
+            <Field label="Backing" hint="Authority or evidence behind the warrant.">
+              <Textarea
+                rows={2}
+                value={draft.backing}
+                onChange={(e) => set("backing", e.target.value)}
+                placeholder="e.g. Long 1996, ch. 4."
+              />
+            </Field>
+          </div>
+
+          <Field label="Qualifier" hint="Optional limiting phrase, e.g. 'on the orthodox reading'.">
+            <Input
+              value={draft.qualifier}
+              onChange={(e) => set("qualifier", e.target.value)}
+              placeholder="on the orthodox reading"
+            />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">

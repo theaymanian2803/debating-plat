@@ -26,18 +26,19 @@ export type CredentialSource = {
 
 export function resolveTursoCredentials(src: CredentialSource): { url: string; token: string } {
   const cf = src.cloudflare;
-  const url = typeof cf?.TURSO_URL === "string" ? cf.TURSO_URL : src.processEnv?.TURSO_URL;
+  const url =
+    typeof cf?.["TURSO_URL"] === "string" ? cf["TURSO_URL"] : src.processEnv?.["TURSO_URL"];
   const token =
-    typeof cf?.TURSO_AUTH_TOKEN === "string"
-      ? cf.TURSO_AUTH_TOKEN
-      : src.processEnv?.TURSO_AUTH_TOKEN;
+    typeof cf?.["TURSO_AUTH_TOKEN"] === "string"
+      ? cf["TURSO_AUTH_TOKEN"]
+      : src.processEnv?.["TURSO_AUTH_TOKEN"];
   if (url && token) return { url, token };
 
   const dev = src.readFile?.(".dev.vars");
   if (dev) {
     const vars = parseDevVarsFile(dev);
-    if (vars.TURSO_URL && vars.TURSO_AUTH_TOKEN) {
-      return { url: vars.TURSO_URL, token: vars.TURSO_AUTH_TOKEN };
+    if (vars["TURSO_URL"] && vars["TURSO_AUTH_TOKEN"]) {
+      return { url: vars["TURSO_URL"], token: vars["TURSO_AUTH_TOKEN"] };
     }
   }
 

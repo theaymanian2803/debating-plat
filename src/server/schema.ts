@@ -60,12 +60,70 @@ CREATE TABLE IF NOT EXISTS entry_tags (
   tag_id   TEXT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
   PRIMARY KEY (entry_id, tag_id)
 );
+CREATE TABLE IF NOT EXISTS source_requests (
+  id          TEXT PRIMARY KEY,
+  entry_id    TEXT NOT NULL DEFAULT '',
+  target      TEXT NOT NULL DEFAULT '',
+  proposal    TEXT NOT NULL DEFAULT '',
+  archive     TEXT NOT NULL DEFAULT '',
+  note        TEXT NOT NULL DEFAULT '',
+  status      TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'dismissed')),
+  created_at  INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS audit_log (
+  id        TEXT PRIMARY KEY,
+  at        INTEGER NOT NULL DEFAULT 0,
+  actor     TEXT NOT NULL DEFAULT 'admin',
+  action    TEXT NOT NULL,
+  entity    TEXT NOT NULL DEFAULT '',
+  entity_id TEXT NOT NULL DEFAULT '',
+  summary   TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS votes (
+  id          TEXT PRIMARY KEY,
+  target_type TEXT NOT NULL,
+  target_id   TEXT NOT NULL,
+  client_id   TEXT NOT NULL,
+  direction   INTEGER NOT NULL,
+  created_at  INTEGER NOT NULL DEFAULT 0,
+  UNIQUE (target_type, target_id, client_id)
+);
+CREATE TABLE IF NOT EXISTS paths (
+  id         TEXT PRIMARY KEY,
+  title      TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  entry_ids  TEXT NOT NULL DEFAULT '[]',
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
 `;
 
-export async function migrate(db: { execute(sql: string): Promise<unknown> }) {
+type Executor = {
+  execute(stmt: string | { sql: string; args?: unknown[] }): Promise<unknown>;
+};
+
+const ensureColumn = async (
+  db: Executor,
+  table: string,
+  column: string,
+  declaration: string,
+): Promise<void> => {
+  const res = (await db.execute(`PRAGMA table_info(${table})`)) as {
+    rows: { name: string }[];
+  };
+  if (!res.rows.some((r) => r.name === column)) {
+    await db.execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${declaration}`);
+  }
+};
+
+export async function migrate(db: Executor) {
   // The libsql HTTP API rejects multi-statement strings, so run them one at a time.
   for (const stmt of SCHEMA_SQL.split(";")) {
     const sql = stmt.trim();
     if (sql) await db.execute(sql);
   }
+  await ensureColumn(db, "entries", "translations", "TEXT NOT NULL DEFAULT '[]'");
+  await ensureColumn(db, "entries", "related", "TEXT NOT NULL DEFAULT '[]'");
+  await ensureColumn(db, "rebuttals", "warrant", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumn(db, "rebuttals", "backing", "TEXT NOT NULL DEFAULT ''");
+  await ensureColumn(db, "rebuttals", "qualifier", "TEXT NOT NULL DEFAULT ''");
 }

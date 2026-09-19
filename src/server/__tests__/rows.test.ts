@@ -11,24 +11,24 @@ describe("rows round-trip", () => {
   it("keeps entry order via sort_order", () => {
     const data = seedData();
     const rows = adminDataToRows(data);
-    expect(rows.entries.map((r) => r.id)).toEqual(data.entries.map((e) => e.id));
-    expect(rows.rebuttals.map((r) => r.sort_order)).toEqual(data.rebuttals.map((_, i) => i));
+    expect(rows.entries.map((r) => r["id"])).toEqual(data.entries.map((e) => e.id));
+    expect(rows.rebuttals.map((r) => r["sort_order"])).toEqual(data.rebuttals.map((_, i) => i));
   });
 
   it("maps entry tags through the join", () => {
     const data = seedData();
     const rows = adminDataToRows(data);
     const first = data.entries[0]!;
-    const links = rows.entryTags.filter((t) => t.entry_id === first.id).map((t) => t.tag_id);
+    const links = rows.entryTags.filter((t) => t["entry_id"] === first.id).map((t) => t["tag_id"]);
     expect(new Set(links)).toEqual(new Set(first.tags));
   });
 
   it("serializes JSON columns", () => {
     const data = seedData();
     const rows = adminDataToRows(data);
-    expect(JSON.parse(rows.entries[0]!.sections as string)).toEqual(data.entries[0]!.sections);
-    expect(JSON.parse(rows.entries[0]!.map as string)).toEqual(data.entries[0]!.map);
-    expect(JSON.parse(rows.rebuttals[0]!.citations as string)).toEqual(
+    expect(JSON.parse(rows.entries[0]!["sections"] as string)).toEqual(data.entries[0]!.sections);
+    expect(JSON.parse(rows.entries[0]!["map"] as string)).toEqual(data.entries[0]!.map);
+    expect(JSON.parse(rows.rebuttals[0]!["citations"] as string)).toEqual(
       data.rebuttals[0]!.citations,
     );
   });

@@ -45,6 +45,8 @@ const blank = (): AdminEntry => ({
   tags: [],
   sections: [],
   map: { nodes: [], edges: [] },
+  translations: [],
+  related: [],
 });
 
 function EntriesPage() {
@@ -59,7 +61,7 @@ function EntriesPage() {
 
   const save = () => {
     if (!draft.title.trim()) return;
-    mutate(() => upsertEntry(draft));
+    mutate(() => upsertEntry({ data: draft }));
     setDraft(blank());
     setEditingId(null);
   };
@@ -127,6 +129,92 @@ function EntriesPage() {
             />
           </Field>
 
+          <Field
+            label="Alternate translations"
+            hint="Optional secondary translations shown side-by-side in the reading room."
+          >
+            <div className="space-y-2">
+              {draft.translations.map((t, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col gap-2 rounded-lg bg-white/40 p-2.5 ring-1 ring-white/70 sm:flex-row"
+                >
+                  <Input
+                    value={t.label}
+                    placeholder="Translation name (e.g. Oldfather 1925)"
+                    className="sm:w-1/3"
+                    onChange={(e) => {
+                      const next = [...draft.translations];
+                      next[i] = { ...t, label: e.target.value };
+                      set("translations", next);
+                    }}
+                  />
+                  <Textarea
+                    rows={1}
+                    value={t.text}
+                    placeholder="Translation text"
+                    onChange={(e) => {
+                      const next = [...draft.translations];
+                      next[i] = { ...t, text: e.target.value };
+                      set("translations", next);
+                    }}
+                  />
+                  <Button
+                    variant="ghost"
+                    onClick={() =>
+                      set(
+                        "translations",
+                        draft.translations.filter((_, j) => j !== i),
+                      )
+                    }
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  set("translations", [...draft.translations, { label: "", text: "" }])
+                }
+              >
+                + Add translation
+              </Button>
+            </div>
+          </Field>
+
+          <Field
+            label="Intertextual cross-references"
+            hint="Link this entry to other verses or premises."
+          >
+            <div className="flex flex-wrap gap-1.5">
+              {data.entries
+                .filter((e) => e.id !== draft.id)
+                .map((e) => {
+                  const on = draft.related.includes(e.id);
+                  return (
+                    <button
+                      key={e.id}
+                      type="button"
+                      onClick={() =>
+                        set(
+                          "related",
+                          on ? draft.related.filter((x) => x !== e.id) : [...draft.related, e.id],
+                        )
+                      }
+                      className={`rounded-full px-2.5 py-1 font-mono text-[10px] ring-1 transition ${
+                        on
+                          ? "bg-ink text-paper ring-ink/20"
+                          : "bg-white/60 text-steel ring-white/80 hover:bg-white/85"
+                      }`}
+                    >
+                      {e.title}
+                    </button>
+                  );
+                })}
+            </div>
+          </Field>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Category">
               <Select value={draft.category} onChange={(e) => set("category", e.target.value)}>
@@ -157,7 +245,7 @@ function EntriesPage() {
               options={data.tags}
               value={draft.tags}
               onChange={(tags) => set("tags", tags)}
-              onCreate={(tag) => mutate(() => upsertTag({ id: tag, label: tag }))}
+              onCreate={(tag) => mutate(() => upsertTag({ data: { id: tag, label: tag } }))}
             />
           </Field>
 
@@ -188,7 +276,10 @@ function EntriesPage() {
                   >
                     Edit
                   </Button>
-                  <Button variant="danger" onClick={() => mutate(() => deleteEntry(e.id))}>
+                  <Button
+                    variant="danger"
+                    onClick={() => mutate(() => deleteEntry({ data: e.id }))}
+                  >
                     Delete
                   </Button>
                 </div>

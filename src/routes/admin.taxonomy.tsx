@@ -45,41 +45,41 @@ function TaxonomyPage() {
   const addCategory = () => {
     const label = newCat.trim();
     if (!label) return;
-    mutate(() => upsertCategory({ id: uid("cat"), label, subs: [] }));
+    mutate(() => upsertCategory({ data: { id: uid("cat"), label, subs: [] } }));
     setNewCat("");
   };
 
   const renameCategory = (id: string) => {
     const label = renaming[id]?.trim();
     if (!label) return;
-    mutate(() => renameCategoryServer(id, label));
+    mutate(() => renameCategoryServer({ data: { id, label } }));
     setRenaming((r) => dropKey(id, r));
   };
 
   const removeCategory = (id: string) => {
-    mutate(() => deleteCategory(id));
+    mutate(() => deleteCategory({ data: id }));
   };
 
   const addSub = (cat: AdminCategory) => {
     const sub = newSub[cat.id]?.trim();
     if (!sub) return;
-    mutate(() => addSubCategory(cat.id, sub));
+    mutate(() => addSubCategory({ data: { id: cat.id, sub } }));
     setNewSub((s) => ({ ...s, [cat.id]: "" }));
   };
 
   const removeSub = (cat: AdminCategory, sub: string) => {
-    mutate(() => removeSubCategory(cat.id, sub));
+    mutate(() => removeSubCategory({ data: { id: cat.id, sub } }));
   };
 
   const addTag = () => {
     const tag = newTag.trim();
     if (!tag) return;
-    mutate(() => upsertTag({ id: tag, label: tag }));
+    mutate(() => upsertTag({ data: { id: tag, label: tag } }));
     setNewTag("");
   };
 
   const removeTag = (tag: string) => {
-    mutate(() => deleteTag(tag));
+    mutate(() => deleteTag({ data: tag }));
   };
 
   const tagCount = (tag: string) => data.entries.filter((e) => e.tags.includes(tag)).length;

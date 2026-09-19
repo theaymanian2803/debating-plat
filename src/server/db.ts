@@ -9,8 +9,9 @@ let clientPromise: Promise<Client> | undefined;
 export function getDb(): Promise<Client> {
   if (!clientPromise) {
     clientPromise = (async () => {
+      const cloudflare = getStashedCloudflareEnv();
       const { url, token } = resolveTursoCredentials({
-        cloudflare: getStashedCloudflareEnv(),
+        ...(cloudflare ? { cloudflare } : {}),
         processEnv: process.env,
         readFile: (p) => {
           try {

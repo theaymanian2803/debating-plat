@@ -68,8 +68,13 @@ export function adminToEntries(admin: AdminData): Entry[] {
           status: r.status,
           ...(r.counter ? { counter: r.counter } : {}),
           citations: r.citations,
+          ...(r.warrant ? { warrant: r.warrant } : {}),
+          ...(r.backing ? { backing: r.backing } : {}),
+          ...(r.qualifier ? { qualifier: r.qualifier } : {}),
         })),
       map: e.map,
+      translations: e.translations,
+      related: e.related,
     } satisfies Entry;
   });
 }

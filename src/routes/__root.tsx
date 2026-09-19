@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
-import { siteNavItems } from "@/lib/nav";
+import { SiteNav } from "@/components/SiteNav";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -114,26 +114,6 @@ function RootShell({ children }: { children: ReactNode }) {
         <Scripts />
       </body>
     </html>
-  );
-}
-
-function SiteNav() {
-  return (
-    <nav className="sticky top-0 z-40 flex flex-wrap items-center gap-1 border-b border-white/60 bg-white/35 px-6 py-2 backdrop-blur-xl">
-      <span className="mr-4 font-serif text-[15px] leading-none font-medium text-ink">Scholia</span>
-      {siteNavItems.map((item) => (
-        <Link
-          key={item.to}
-          to={item.to}
-          activeOptions={{ exact: item.to === "/" }}
-          activeProps={{ className: "bg-ink text-paper ring-ink/15" }}
-          inactiveProps={{ className: "text-steel ring-transparent hover:bg-white/60" }}
-          className="rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ring-1 transition"
-        >
-          {item.label}
-        </Link>
-      ))}
-    </nav>
   );
 }
 

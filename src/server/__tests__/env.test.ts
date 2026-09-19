@@ -30,7 +30,6 @@ describe("resolveTursoCredentials", () => {
 
   it("falls back to process.env", () => {
     const creds = resolveTursoCredentials({
-      cloudflare: undefined,
       processEnv: { TURSO_URL: "env-url", TURSO_AUTH_TOKEN: "env-tok" },
       readFile: () => undefined,
     });
@@ -39,7 +38,6 @@ describe("resolveTursoCredentials", () => {
 
   it("falls back to .dev.vars", () => {
     const creds = resolveTursoCredentials({
-      cloudflare: undefined,
       processEnv: {},
       readFile: () => "TURSO_URL=dev-url\nTURSO_AUTH_TOKEN=dev-tok\n",
     });
@@ -47,8 +45,8 @@ describe("resolveTursoCredentials", () => {
   });
 
   it("throws when nothing is available", () => {
-    expect(() =>
-      resolveTursoCredentials({ cloudflare: undefined, processEnv: {}, readFile: () => undefined }),
-    ).toThrow(/Turso credentials/);
+    expect(() => resolveTursoCredentials({ processEnv: {}, readFile: () => undefined })).toThrow(
+      /Turso credentials/,
+    );
   });
 });

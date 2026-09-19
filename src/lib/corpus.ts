@@ -22,6 +22,9 @@ export type Rebuttal = {
   status: Verification;
   counter?: { author: string; body: string; status: Verification };
   citations: Citation[];
+  warrant?: string;
+  backing?: string;
+  qualifier?: string;
 };
 
 export type MapNode = {
@@ -45,6 +48,8 @@ export type Entry = {
   sections: CommentarySection[];
   rebuttals: Rebuttal[];
   map: { nodes: MapNode[]; edges: [string, string][] };
+  translations: { label: string; text: string }[];
+  related: string[];
 };
 
 export const collections = [
@@ -129,6 +134,9 @@ export const entries: Entry[] = [
         perspective: "Stoic",
         claim: "Assent is wholly internal; the impression is not.",
         status: "verified",
+        warrant: "Whatever is not subject to our command is indifferent to the will.",
+        backing: "Long 1996, ch. 4; Burnet apparatus ad IV.1.",
+        qualifier: "on the orthodox reading",
         counter: {
           author: "E. Whitman",
           body: "Assent is trained, not free — habit fixes it before judgment.",
@@ -195,6 +203,13 @@ export const entries: Entry[] = [
         ["habit", "eudaimonia"],
       ],
     },
+    translations: [
+      {
+        label: "Oldfather (1925)",
+        text: "It is not in our power, but in the use of it, that our good and evil consists.",
+      },
+    ],
+    related: ["meditations-3-1"],
   },
   {
     id: "genesis-1-1",
@@ -250,6 +265,9 @@ export const entries: Entry[] = [
         perspective: "Creation ex nihilo",
         claim: "The verse asserts an absolute beginning with no prior substrate.",
         status: "disputed",
+        warrant: "A beginning in the strict sense excludes any pre-existing material.",
+        backing: "Rashi, ad loc.; LXX rendering discussed above.",
+        qualifier: "unless the dependent-clause reading is adopted",
         counter: {
           author: "C. Westermann",
           body: "The syntax is a dependent clause: \u201cwhen God began to create\u201d, presupposing the deep.",
@@ -294,6 +312,13 @@ export const entries: Entry[] = [
         ["substrate", "tehom"],
       ],
     },
+    translations: [
+      {
+        label: "JPS (1917)",
+        text: "In the beginning God created the heaven and the earth. Now the earth was unformed and void.",
+      },
+    ],
+    related: [],
   },
   {
     id: "euthyphro-dilemma",
@@ -417,6 +442,8 @@ export const entries: Entry[] = [
         ["nature", "autonomy"],
       ],
     },
+    translations: [],
+    related: [],
   },
   {
     id: "meditations-3-1",
@@ -509,6 +536,8 @@ export const entries: Entry[] = [
         ["faculty", "harm"],
       ],
     },
+    translations: [],
+    related: ["discourses-4-1"],
   },
 ];
 
@@ -524,4 +553,31 @@ export function allCitations(entry: Entry): Citation[] {
     ...entry.sections.flatMap((s) => s.citations),
     ...entry.rebuttals.flatMap((r) => r.citations),
   ];
+}
+
+// Everything worth matching during a corpus search, flattened to one string.
+export function searchText(entry: Entry): string {
+  const parts: string[] = [
+    entry.title,
+    entry.subtitle,
+    entry.breadcrumb,
+    entry.primary,
+    entry.secondary,
+    ...entry.translations.map((t) => `${t.label} ${t.text}`),
+    ...entry.sections.flatMap((s) => [
+      s.title,
+      s.body,
+      ...s.citations.map((c) => `${c.label} ${c.detail} ${c.archive}`),
+    ]),
+    ...entry.rebuttals.flatMap((r) => [
+      r.perspective,
+      r.claim,
+      r.warrant ?? "",
+      r.backing ?? "",
+      ...(r.counter ? [r.counter.author, r.counter.body] : []),
+      ...r.citations.map((c) => `${c.label} ${c.detail} ${c.archive}`),
+    ]),
+    ...entry.map.nodes.map((n) => n.label),
+  ];
+  return parts.join(" ").toLowerCase();
 }
